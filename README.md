@@ -1,6 +1,9 @@
 # CS-643(858) Cloud Computing 
 
-# Purpose
+## Link to sample test:
+https://jaysheeldodia.github.io/CS643-856-CloudComputing/
+
+## Purpose
 
 <ol> 
     <li>Bunch of questions from AWS Cloud Developing Module </li>
