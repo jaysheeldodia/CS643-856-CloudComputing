@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            max-width: 800px;
+        }
+
+        .question {
+            margin-bottom: 2rem;
+        }
+
+        .options button {
+            display: block;
+            margin: 0.25rem 0;
+            padding: 0.5rem 1rem;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .options button.correct {
+            background-color: #c8e6c9;
+            border-color: #2e7d32;
+        }
+
+        .options button.wrong {
+            background-color: #ffcdd2;
+            border-color: #c62828;
+        }
+
+        .options button.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Quiz</h1>
+    <div id="quiz-container"></div>
+
+    <script>
+        async function loadQuestions() {
+            const questions = [
+                {
+                    "question": "What are the benefits of using the AWS Cloud9 integrated development environment (IDE), as described in the sources?",
+                    "options": [
+                        "It requires significant local machine setup.",
+                        "It offers limited language support.",
+                        "It is an IDE that can be accessed via a web browser and provides benefits for developing and running code.",
+                        "It is only suitable for large enterprise applications."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Which phase of the systems development lifecycle (SDLC) includes compiling code, performing unit tests, and running style checkers?",
+                    "options": [
+                        "Plan",
+                        "Develop (Code)",
+                        "Develop (Build)",
+                        "Deploy"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "According to the sources, what is a key benefit of using AWS Software Development Kits (SDKs)?",
+                    "options": [
+                        "They only work with the AWS Management Console.",
+                        "They allow programmatic interaction with AWS services.",
+                        "They are only available for a limited number of programming languages.",
+                        "They require manual API calls without abstraction."
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "Sof\u00eda is starting to develop a web presence for the caf\u00e9 and wants to decide on a development environment. Which AWS tool is mentioned as an integrated development environment (IDE) in the context of getting started with developing on AWS?",
+                    "options": [
+                        "AWS CLI",
+                        "AWS SDKs",
+                        "AWS Cloud9",
+                        "IAM"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Which statement accurately describes the role of the AWS Command Line Interface (AWS CLI)?",
+                    "options": [
+                        "It is used exclusively for accessing AWS services programmatically through code.",
+                        "It is a web-based IDE for writing and running code.",
+                        "It provides command line access to interact with AWS services from a terminal.",
+                        "It is primarily used for deploying applications to production."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is a characteristic of AWS CloudShell?",
+                    "options": [
+                        "Requires local installation and configuration.",
+                        "Offers limited storage capacity.",
+                        "Provides CLI access in a web browser with a pre-authenticated session.",
+                        "Is a paid service with usage-based pricing."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "According to the sources, how can you interact with AWS services?",
+                    "options": [
+                        "Only through the AWS Management Console.",
+                        "Only programmatically using SDKs.",
+                        "Only using the AWS CLI.",
+                        "Through the AWS Management Console, programmatically with SDKs or service APIs, and using the AWS CLI."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "Which of the following is listed as an AWS SDK supported by the sources?",
+                    "options": [
+                        "C#",
+                        "Pascal",
+                        "Go",
+                        "Swift"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "When developing with AWS SDKs, what is the role of a service client API?",
+                    "options": [
+                        "It has multiple methods per service operation.",
+                        "It does not require objects for request and result data.",
+                        "It has one method per service operation and uses objects for request and result data.",
+                        "It bypasses the AWS service endpoint."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Sof\u00eda wants to create a proof-of-concept website for the caf\u00e9 and is ready to start building after deciding on a development environment. Which AWS service is introduced as a storage solution in the context of developing a cloud application?",
+                    "options": [
+                        "Amazon DynamoDB",
+                        "Amazon EC2",
+                        "Amazon Simple Storage Service (Amazon S3)",
+                        "AWS Lambda"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is the key feature of Amazon S3 versioning?",
+                    "options": [
+                        "It can be easily disabled after being enabled.",
+                        "It keeps only the most recent version of an object.",
+                        "It keeps multiple variants of an object in the same bucket and can help recover from unintended user actions.",
+                        "It is only available for new S3 buckets."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "According to the sources, what are the two types of policies for managing bucket access in Amazon S3?",
+                    "options": [
+                        "User policies and Group policies",
+                        "IAM policies and S3 ACLs",
+                        "Identity-based policies and Resource-based policies",
+                        "Bucket policies and Object policies"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "A company needs a durable storage solution for daily sales figures that protects against accidental deletion. Which action is recommended to protect against unintended user actions using Amazon S3?",
+                    "options": [
+                        "Store data in an EBS volume and create snapshots.",
+                        "Store data in two S3 buckets in different AWS Regions.",
+                        "Store data on EC2 instance storage.",
+                        "Store data in an S3 bucket and enable versioning."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What is the primary purpose of AWS Identity and Access Management (IAM)?",
+                    "options": [
+                        "To manage billing and payments for AWS services.",
+                        "To provision and manage EC2 instances.",
+                        "To help secure access to AWS resources by controlling who is authenticated and authorized.",
+                        "To monitor the health and performance of AWS services."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "In the AWS Shared Responsibility Model, which aspect is primarily the customer's responsibility?",
+                    "options": [
+                        "Security of the cloud infrastructure.",
+                        "Maintenance of the global network.",
+                        "Security in the cloud, such as configuring access controls and protecting data.",
+                        "Physical security of data centers."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is authentication in the context of securing access to AWS resources?",
+                    "options": [
+                        "Determining what actions a requester is allowed to perform.",
+                        "Establishing the identity of the requester through credentials.",
+                        "Checking relevant policies to allow or deny a request.",
+                        "Encrypting data stored in AWS."
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "According to the sources, how can you authorize access to AWS services using IAM?",
+                    "options": [
+                        "Only by using a single root account for all operations.",
+                        "By using IAM users, groups, or roles.",
+                        "By only attaching policies directly to resources.",
+                        "Authorization is automatically granted upon creating an AWS account."
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "When evaluating IAM policies, what is the effect of an explicit Deny statement?",
+                    "options": [
+                        "It is ignored if there is a corresponding Allow statement.",
+                        "It only applies if no Allow statement exists.",
+                        "It will always override any Allow statement.",
+                        "It only applies to resource-based policies."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Frank and Martha want other team members to help Sof\u00eda develop the caf\u00e9's web application. Before continuing, Sof\u00eda needs to define the level of access that users and systems should have across cloud resources. Which AWS service is relevant for this task?",
+                    "options": [
+                        "Amazon S3",
+                        "Amazon DynamoDB",
+                        "AWS Identity and Access Management (IAM)",
+                        "AWS Lambda"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "A developer needs an integrated development environment (IDE) for writing and updating code. Their technical lead needs to review code and leave comments in real time from any computer. Which method is the simplest way to meet this use case, according to a sample exam question?",
+                    "options": [
+                        "Connect to the AWS Management Console and use the AWS CLI.",
+                        "Use an AWS CodeCommit repository and keep local versions in sync.",
+                        "Configure an AWS Cloud9 environment running on an Amazon EC2 instance and connect to it through a web browser.",
+                        "Configure an AWS Serverless Application Model (AWS SAM) environment."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What are the two major types of databases discussed in the sources?",
+                    "options": [
+                        "SQL databases and NoSQL databases.",
+                        "Managed databases and Unmanaged databases.",
+                        "On-premises databases and Cloud databases.",
+                        "Relational databases and Nonrelational databases."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "When should you consider choosing a relational database?",
+                    "options": [
+                        "When you need extreme read/write capacity.",
+                        "When you must use strict schema rules and enforce data quality.",
+                        "When you require horizontal scalability.",
+                        "When you have a flexible, non-traditional schema."
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "Which AWS service is an example of a nonrelational database service?",
+                    "options": [
+                        "Amazon RDS",
+                        "Amazon Aurora",
+                        "Amazon DynamoDB",
+                        "Amazon EC2"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What are the basic components of Amazon DynamoDB?",
+                    "options": [
+                        "Databases, Tables, and Rows.",
+                        "Table, Items, and Attributes.",
+                        "Clusters, Nodes, and Shards.",
+                        "Schemas, Tables, and Fields."
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "What is a Simple primary key in DynamoDB?",
+                    "options": [
+                        "A key composed of a partition key and a sort key.",
+                        "A primary key composed only of a partition key.",
+                        "A key that must be unique across the entire table.",
+                        "A key used for secondary indexes."
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "What is a Composite primary key in DynamoDB?",
+                    "options": [
+                        "A key composed only of a partition key.",
+                        "A key that must be unique across the entire table.",
+                        "A primary key composed of a partition key and a sort key.",
+                        "A key used for global secondary indexes."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "In DynamoDB, what is the purpose of a secondary index?",
+                    "options": [
+                        "To enforce strict schema rules.",
+                        "To improve the performance of operations based on the table's primary key.",
+                        "To query data based on non-primary-key attributes.",
+                        "To define the primary key for a table."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is the difference between an Eventually consistent read and a Strongly consistent read in DynamoDB?",
+                    "options": [
+                        "Eventually consistent reads return the most up-to-date data, while strongly consistent reads might return stale data.",
+                        "Strongly consistent reads are faster than consistent reads.",
+                        "Eventually consistent reads might return slightly stale data, while strongly consistent reads return the most up-to-date data.",
+                        "Eventually consistent reads use more read capacity units (RCUs) than strongly consistent reads."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What do DynamoDB Transactions provide?",
+                    "options": [
+                        "The ability to query data using SQL.",
+                        "Only read operations on multiple items.",
+                        "Atomicity, Consistency, Isolation, and Durability (ACID) for coordinated changes to multiple items.",
+                        "A way to stream data changes to other services."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "A developer needs to read 20 items that are 11 KB in size every second from a DynamoDB table, with eventual consistency. How many RCUs must be provisioned?",
+                    "options": [
+                        "20 RCUs",
+                        "60 RCUs",
+                        "30 RCUs",
+                        "11 RCUs"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "A developer needs to write 120 items that are 7 KB in size every minute to a DynamoDB table. How many WCUs must be provisioned?",
+                    "options": [
+                        "7 WCUs",
+                        "120 WCUs",
+                        "1 WCUs",
+                        "14 WCUs"
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What is Amazon DynamoDB Streams used for?",
+                    "options": [
+                        "To provide strongly consistent reads.",
+                        "To perform batch operations on items.",
+                        "To replicate data to global tables.",
+                        "To capture time-ordered sequence of item-level modifications in a DynamoDB table."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "Which DynamoDB operation reads ALL items from a table or index, and is generally less efficient than a Query operation?",
+                    "options": [
+                        "GetItem",
+                        "PutItem",
+                        "Query",
+                        "Scan"
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "The caf\u00e9 website needs to update information dynamically and allow staff to retrieve product inventory. Which type of database solution is suggested as part of developing this cloud application?",
+                    "options": [
+                        "Relational database",
+                        "SQL database",
+                        "NoSQL database",
+                        "File system"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is an API, as described in the sources?",
+                    "options": [
+                        "A physical device that connects networks.",
+                        "A database system for storing information.",
+                        "A software mechanism that simplifies development by abstracting implementation details and establishing how systems communicate.",
+                        "A user interface for interacting with applications."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What does REST stand for?",
+                    "options": [
+                        "Reliable Event System Transfer",
+                        "Responsive State Technology",
+                        "Remote Execution Service",
+                        "Representational State Transfer"
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What is Amazon API Gateway?",
+                    "options": [
+                        "A serverless database service.",
+                        "A service for running containerized applications.",
+                        "A network load balancer.",
+                        "A fully managed service that provides API proxy functionality and simplifies API development."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What are the two types of RESTful APIs supported by API Gateway, according to the sources?",
+                    "options": [
+                        "SOAP APIs and HTTP APIs",
+                        "REST APIs and HTTP APIs",
+                        "Public APIs and Private APIs",
+                        "Synchronous APIs and Asynchronous APIs"
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "What are some ways you can create APIs in API Gateway?",
+                    "options": [
+                        "Only by using the AWS Management Console.",
+                        "Only by using the AWS CLI.",
+                        "Only by importing an OpenAPI definition.",
+                        "Using the AWS CLI, using the API Gateway console, or importing an OpenAPI definition."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "Which type of API Gateway integration provides the developer full control over API requests and responses and supports features not yet available in HTTP APIs?",
+                    "options": [
+                        "HTTP API integration",
+                        "REST API integration",
+                        "WebSocket integration",
+                        "Private integration"
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "What is a benefit of using transformation options in API Gateway?",
+                    "options": [
+                        "They reduce the number of requests that reach the backend.",
+                        "They automatically encrypt data in transit.",
+                        "They allow you to modify requests and responses between clients and targets.",
+                        "They enforce strict schema validation."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "According to the sources, what is a key aspect of deploying APIs in API Gateway?",
+                    "options": [
+                        "Deployments are independent of stages.",
+                        "Stages are temporary and cannot be named.",
+                        "Deployments are associated with a stage, which is a snapshot of an API.",
+                        "Stages are only used for production environments."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "How can you protect APIs from common web exploits like SQL injection and cross-site scripting (XSS) using AWS services with API Gateway?",
+                    "options": [
+                        "By enabling versioning on the API.",
+                        "By using client certificates.",
+                        "By configuring cache keys.",
+                        "By using AWS WAF."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What is payload compression used for in API Gateway?",
+                    "options": [
+                        "To compress data stored in the backend database.",
+                        "To encrypt the client payload for security.",
+                        "To reduce the size of the client payload.",
+                        "To improve backend processing speed."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Sof\u00eda wants to use an API to integrate the caf\u00e9 website with the product database. Before completing the full integration, she wants to test the front end using mock endpoints. Which AWS service is relevant for this task?",
+                    "options": [
+                        "Amazon SQS",
+                        "AWS Lambda",
+                        "Amazon DynamoDB",
+                        "Amazon API Gateway"
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "A developer is building a web application that uses API Gateway and needs to maintain different environments for development and production (dev and prod) workloads, backed by a Lambda function with dev and prod aliases. How can the developer achieve this result with the LEAST amount of configuration?",
+                    "options": [
+                        "Create one REST API and deploy separate versions for dev and prod.",
+                        "Create two separate REST APIs, one for dev and one for prod.",
+                        "Create one REST API, integrate it with the dev alias, deploy to a dev environment, and use a canary release for prod integrating with the prod alias.",
+                        "Create one REST API, integrate it with the Lambda function, and use API Gateway stages configured with stage variables to point to the different Lambda aliases. (This option aligns with the concept of using stages to differentiate environments and connect to different backends/aliases, as described in and implicitly supported by the sample question which points away from options involving separate APIs or complex canary setups that don't directly address connecting stages to aliases). Note: The provided sample question and options don't explicitly state connecting stages to aliases, but using stages for dev/prod separation and stage variables to connect to different backends (like Lambda aliases) is a standard pattern facilitated by API Gateway stages. Option C and D in the source's sample question describe canary releases, not necessarily the simplest overall configuration for distinct dev/prod stages. Given the options and the focus on API Gateway stages for differentiating environments, creating stages and using stage variables is the most direct way to connect to different backend aliases within a single API definition."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What is serverless computing, as described in the sources?",
+                    "options": [
+                        "Running applications on physical servers without virtualization.",
+                        "Using virtual machines to host applications.",
+                        "Managing and provisioning servers manually.",
+                        "Running code without provisioning or managing servers."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What are some characteristics of AWS Lambda?",
+                    "options": [
+                        "Requires manual server provisioning and scaling.",
+                        "You pay for idle compute resources.",
+                        "Invokes your code in response to events and scales automatically.",
+                        "Provides limited language support."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "According to the sources, how does Lambda work?",
+                    "options": [
+                        "You rent dedicated servers and install your code.",
+                        "You continuously run your code on pre-provisioned servers.",
+                        "You upload your code, set it up to run when events occur, and Lambda runs it only when activated, using only needed compute resources.",
+                        "You pay for compute time regardless of whether your code is running."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What are the three Lambda invocation models discussed in the sources?",
+                    "options": [
+                        "API Gateway, S3, and DynamoDB.",
+                        "Push, Pull, and Stream.",
+                        "Synchronous, Asynchronous, and Polling (event source mapping).",
+                        "RequestResponse, Event, and Batch."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "When invoking a Lambda function asynchronously, how does Lambda handle the event?",
+                    "options": [
+                        "The calling service waits for a response from your function.",
+                        "Lambda queues the event before passing it to your function.",
+                        "There is no retry mechanism built in.",
+                        "Errors in a shard block further processing."
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "When invoking a Lambda function synchronously, how does Lambda handle the event?",
+                    "options": [
+                        "Lambda queues the event before passing it to your function.",
+                        "The calling service waits for a response from your function.",
+                        "Errors in a batch are returned to the queue.",
+                        "It has a built-in retry mechanism."
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "What type of permissions does a Lambda function require?",
+                    "options": [
+                        "Only permissions to be invoked by other services.",
+                        "Only permissions to interact with other AWS services.",
+                        "No specific permissions are required as it is serverless.",
+                        "Permissions to be invoked and permissions to interact with other services, defined by IAM or trust policies."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What is the function handler in a Lambda function?",
+                    "options": [
+                        "The configuration settings for memory and timeout.",
+                        "The log output of the function.",
+                        "The code that manages concurrency.",
+                        "The entry point into the Lambda function."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "When configuring a Lambda function, what does the Memory setting determine?",
+                    "options": [
+                        "The maximum amount of time the function can run.",
+                        "The number of invocations that can run at the same time.",
+                        "The amount of memory and proportional CPU allocated to the function.",
+                        "The event sources that invoke the function."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is a recommended best practice for designing a Lambda function's environment?",
+                    "options": [
+                        "Treat functions as stateful.",
+                        "Include all dependencies directly in the handler method.",
+                        "Minimize the reuse of the temporary runtime environment.",
+                        "Treat functions as stateless."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What are Lambda layers used for?",
+                    "options": [
+                        "To create immutable versions of your code.",
+                        "To point to different versions of your function.",
+                        "To centrally manage code and data that are shared across multiple functions, reducing deployment package size.",
+                        "To define the function's entry point."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Which AWS service collects monitoring and operational data (logs, metrics, events) and provides a unified view of AWS resources, applications, and services?",
+                    "options": [
+                        "AWS X-Ray",
+                        "Amazon S3",
+                        "AWS IAM",
+                        "Amazon CloudWatch"
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "Which AWS service traces requests through your application and shows a map of its underlying components to help find trouble spots?",
+                    "options": [
+                        "Amazon CloudWatch",
+                        "Amazon SQS",
+                        "Amazon SNS",
+                        "AWS X-Ray"
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "A developer is testing an application deployed to Lambda. It fails remotely due to missing dependencies not included in the deployment package to stay under the size limit. Which approach is recommended to resolve this?",
+                    "options": [
+                        "Use the Lambda console editor to update the code.",
+                        "Create an additional .zip file with dependencies and include it in the package.",
+                        "Add references to dependencies in environment variables.",
+                        "Create a layer that contains the missing dependencies and attach it to the Lambda function."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "Sof\u00eda replaced mock API endpoints with real ones to connect the caf\u00e9 website to the backend database. Which AWS service did she use to make this connection between the REST API and the data stored in DynamoDB in the lab scenario?",
+                    "options": [
+                        "Amazon S3",
+                        "Amazon API Gateway",
+                        "Amazon DynamoDB",
+                        "AWS Lambda"
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "How do containers differentiate from virtual machines (VMs)?",
+                    "options": [
+                        "Containers have their own guest operating system.",
+                        "VMs share the host OS kernel.",
+                        "Containers share the host OS kernel, while VMs have their own guest OS.",
+                        "VMs are more lightweight and faster to start than containers."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is a container, as defined in the sources?",
+                    "options": [
+                        "A complete operating system with applications.",
+                        "A virtual machine with minimal resources.",
+                        "A database for storing application data.",
+                        "A standardized unit of software that contains everything an application needs to run."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What is a characteristic of a microservices architecture, as described in the sources?",
+                    "options": [
+                        "Applications are built as single, monolithic units.",
+                        "Services share a single, large database.",
+                        "Services are tightly coupled and dependent on each other.",
+                        "Services are independently deployable and designed for failure."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What is the primary driver for using container orchestration services?",
+                    "options": [
+                        "To reduce the need for developers to write code.",
+                        "To eliminate the need for databases.",
+                        "To simplify managing containers at scale.",
+                        "To improve application performance automatically."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Which AWS services are mentioned for container management?",
+                    "options": [
+                        "Amazon EC2 and Amazon S3.",
+                        "Amazon Elastic Container Service (Amazon ECS), Amazon Elastic Container Registry (Amazon ECR), and Amazon Elastic Kubernetes Service (Amazon EKS).",
+                        "AWS Lambda and Amazon API Gateway.",
+                        "Amazon DynamoDB and Amazon RDS."
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "What is Amazon ECR?",
+                    "options": [
+                        "A container orchestration service.",
+                        "A service for running Kubernetes.",
+                        "A fully managed container registry service.",
+                        "A service for deploying web applications."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Which AWS service is a fully managed container orchestration service that allows you to launch containers on either Fargate or EC2 instances?",
+                    "options": [
+                        "Amazon EKS",
+                        "AWS Lambda",
+                        "Amazon ECS",
+                        "AWS Elastic Beanstalk"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "When might you choose Amazon ECS with Fargate over Amazon EC2 for running containers?",
+                    "options": [
+                        "When you need more predictable resource requirements.",
+                        "When you have large workloads optimized for price.",
+                        "When you need to comply with specific organizational security requirements.",
+                        "When you have services subject to wide swings in demand or prefer the ease of paying for only what you use."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What is AWS Elastic Beanstalk?",
+                    "options": [
+                        "A serverless computing service.",
+                        "A managed database service.",
+                        "A service for deploying and scaling web applications and services, handling details like capacity provisioning and load balancing.",
+                        "A container registry service."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "How does Elastic Beanstalk simplify container deployment?",
+                    "options": [
+                        "By requiring manual configuration of each EC2 instance.",
+                        "By only supporting single-container applications.",
+                        "By allowing you to quickly launch a Docker multicontainer environment without worrying about Amazon ECS configuration details.",
+                        "It does not support Docker containers."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "A cloud architect wants to migrate a web application to containers and get a team with limited AWS/container experience started quickly. Which solution is recommended?",
+                    "options": [
+                        "Use Amazon ECR to host images they create from scratch.",
+                        "Configure EC2 instances with automatic scaling and install Docker images.",
+                        "Configure Amazon ECS with a cluster of EC2 instances.",
+                        "Use Elastic Beanstalk to launch a multicontainer Docker environment."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What is caching, as described in the sources?",
+                    "options": [
+                        "Storing data in a relational database.",
+                        "Encrypting data for security.",
+                        "Processing data in real time.",
+                        "Serving requests from a copy of data (a cache) rather than making the request to the origin."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "Which workloads benefit from caching?",
+                    "options": [
+                        "Write-Heavy Workloads",
+                        "Rarely Accessed Data",
+                        "Read-Heavy Workloads",
+                        "Data that must always be perfectly fresh"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Which AWS service is described as a fully managed, in-memory data store with sub-millisecond latency for caching application data?",
+                    "options": [
+                        "Amazon S3",
+                        "Amazon DynamoDB",
+                        "Amazon ElastiCache",
+                        "Amazon RDS"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What are the two open-source in-memory caching engines supported by ElastiCache?",
+                    "options": [
+                        "MySQL and PostgreSQL",
+                        "MongoDB and Cassandra",
+                        "Memcached and Redis",
+                        "Aurora and DynamoDB"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Which ElastiCache engine is suitable if you need the simplest model possible?",
+                    "options": [
+                        "Redis",
+                        "Memcached",
+                        "Both Memcached and Redis equally",
+                        "Neither are suitable"
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "Which ElastiCache engine is suitable if you need features like data persistence, advanced data types, or high availability with replication and automatic failover?",
+                    "options": [
+                        "Memcached",
+                        "Redis",
+                        "Both Memcached and Redis equally",
+                        "Neither are suitable"
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "What is Amazon CloudFront?",
+                    "options": [
+                        "A serverless compute service.",
+                        "A managed messaging service.",
+                        "A fast Content Delivery Network (CDN) service that delivers data globally with low latency.",
+                        "A service for running containers."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "In CloudFront, what is a cache key?",
+                    "options": [
+                        "The encryption key used for data in the cache.",
+                        "The policy that determines who can access the cache.",
+                        "The unique identifier for each object in the cache.",
+                        "The amount of memory allocated to the cache."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What are Lambda@Edge and CloudFront Functions used for?",
+                    "options": [
+                        "To perform backend database queries.",
+                        "To manage access permissions for CloudFront.",
+                        "To customize how your CloudFront distribution processes requests and responses.",
+                        "To encrypt data stored at the edge locations."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What are the two primary caching strategies discussed?",
+                    "options": [
+                        "Read-through and Write-behind.",
+                        "Invalidate and Update.",
+                        "Lazy loading and Write-through.",
+                        "Cache-aside and Cache-through."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Describe the Lazy loading caching strategy.",
+                    "options": [
+                        "The cache is updated whenever data is written to the database.",
+                        "The cache is always updated in real time.",
+                        "The cache is updated only when necessary (cache hit or cache miss).",
+                        "Data is loaded into the cache only when the application starts."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Describe the Write-through caching strategy.",
+                    "options": [
+                        "The cache is updated only when necessary (cache hit or cache miss).",
+                        "Data is loaded into the cache only when read.",
+                        "The cache is updated whenever data is written to the database.",
+                        "It involves manually invalidating cache entries."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "A caf\u00e9 website experiences slow loading times for inventory information. An AWS consultant suggests adding database caching. Which managed service is recommended for this task?",
+                    "options": [
+                        "Amazon DynamoDB",
+                        "Amazon S3",
+                        "AWS Lambda",
+                        "Amazon ElastiCache"
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "Which requirement is a reason to choose Memcached over Redis for your ElastiCache configuration, according to a sample exam question?",
+                    "options": [
+                        "You need data replication.",
+                        "You need the simplest model possible.",
+                        "You have complex data types.",
+                        "You need an in-memory cache."
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "How do messaging services like queues, pub/sub messaging, and streams support application development?",
+                    "options": [
+                        "By enforcing synchronous processing.",
+                        "By increasing interdependencies between components.",
+                        "By supporting asynchronous processing.",
+                        "By managing database schemas."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is Amazon SQS?",
+                    "options": [
+                        "A pub/sub messaging service.",
+                        "A real-time data streaming service.",
+                        "A fully managed message queuing service.",
+                        "A serverless compute service."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is the primary benefit of asynchronous processing using messaging services?",
+                    "options": [
+                        "It ensures all processes complete at the same time.",
+                        "It makes services tightly coupled.",
+                        "It eliminates the need for databases.",
+                        "It reduces interdependencies and can improve responsiveness to the client."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "What are the two types of SQS queues?",
+                    "options": [
+                        "Standard and Delayed.",
+                        "Visible and Invisible.",
+                        "Encrypted and Unencrypted.",
+                        "Standard and FIFO."
+                    ],
+                    "correct_index": 3
+                },
+                {
+                    "question": "Which SQS queue type provides nearly unlimited throughput but does not guarantee message order and might deliver messages at least once (duplicates are possible)?",
+                    "options": [
+                        "FIFO",
+                        "Standard",
+                        "Encrypted",
+                        "Delayed"
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "Which SQS queue type preserves message order and provides exactly-once delivery but has more limited throughput?",
+                    "options": [
+                        "Standard",
+                        "FIFO",
+                        "Visible",
+                        "Invisible"
+                    ],
+                    "correct_index": 1
+                },
+                {
+                    "question": "What happens to a message in an SQS queue after a consumer retrieves it using the ReceiveMessage operation?",
+                    "options": [
+                        "It is immediately deleted from the queue.",
+                        "It remains visible to all consumers.",
+                        "It is made invisible on the queue for the duration of the visibility timeout.",
+                        "It is sent to a dead-letter queue."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is the purpose of a dead-letter queue in Amazon SQS?",
+                    "options": [
+                        "To store messages that were successfully processed.",
+                        "To provide a backup of all messages in the main queue.",
+                        "To send failed records for separate processing after a maximum receive count is exceeded.",
+                        "To hold messages until a consumer is available."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is the difference between short polling and long polling in Amazon SQS?",
+                    "options": [
+                        "Short polling is more efficient and cost-effective.",
+                        "Long polling samples only a subset of servers.",
+                        "Short polling samples a subset of servers for messages, while long polling queries all servers for messages.",
+                        "Long polling returns immediately, while short polling waits for messages."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "Which API operation is used by developers to add messages to an SQS queue?",
+                    "options": [
+                        "ReceiveMessage",
+                        "DeleteMessage",
+                        "SendMessage",
+                        "GetQueueUrl"
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "What is Amazon SNS?",
+                    "options": [
+                        "A message queuing service.",
+                        "A data streaming service.",
+                        "A fully managed messaging service with pub/sub functionality.",
+                        "A service for running web applications."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "In Amazon SNS, what is the role of a topic?",
+                    "options": [
+                        "It is a consumer that processes messages.",
+                        "It is where messages are stored persistently.",
+                        "It acts as a logical access point where publishers send messages and subscribers receive copies.",
+                        "It filters messages based on content."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "How does message filtering work in Amazon SNS?",
+                    "options": [
+                        "All subscribers must receive all messages.",
+                        "Publishers decide which subscribers receive messages.",
+                        "Subscribers can set filter policies to receive only relevant messages.",
+                        "Messages are filtered automatically based on message size."
+                    ],
+                    "correct_index": 2
+                },
+                {
+                    "question": "A developer wants to introduce an asynchronous connection for processing individual banking transactions (deposits and withdrawals) that must be handled in the order they arrive. Which messaging service method would meet these needs?",
+                    "options": [
+                        "Send transaction messages to a standard SQS queue.",
+                        "Put transaction messages on to a Kinesis data stream.",
+                        "Send transaction messages to a FIFO SQS queue.",
+                        "Put transactions on to a Kinesis Data Firehose delivery stream."
+                    ],
+                    "correct_index": 2
+                }
+            ];
+
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            questions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'question';
+
+                const qElem = document.createElement('p');
+                qElem.textContent = `${index + 1}. ${q.question}`;
+                div.appendChild(qElem);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const btn = document.createElement('button');
+                    btn.textContent = option;
+
+                    btn.addEventListener('click', () => {
+                        const buttons = optionsDiv.querySelectorAll('button');
+                        buttons.forEach(b => b.classList.add('disabled'));
+
+                        if (optIndex === q.correct_index) {
+                            btn.classList.add('correct');
+                        } else {
+                            btn.classList.add('wrong');
+                            buttons[q.correct_index].classList.add('correct');
+                        }
+                    });
+
+                    optionsDiv.appendChild(btn);
+                });
+
+                div.appendChild(optionsDiv);
+                container.appendChild(div);
+            });
+        }
+
+        loadQuestions();
+    </script>
+</body>
+
+</html>
