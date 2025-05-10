@@ -8,6 +8,7 @@
 </ol>
 
 ## List of Modules
+
 <ul> 
     <li>Module 1: Introduction to Modules</li>
     <li>Module 2: Introduction to developing with AWs </li>
